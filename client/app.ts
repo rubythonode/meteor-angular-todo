@@ -1,20 +1,25 @@
-import {Component, View, NgFor, bootstrap} from 'angular2/angular2';
-import {CreateTodo} from 'client/create-todo/create-todo';
+import {Component, View, bind, bootstrap} from 'angular2/angular2';
+import {routerInjectables, routerDirectives, Router, RouteConfig} from 'angular2/router';
+import {LocationStrategy, Location, HashLocationStrategy} from 'angular2/router';
+
+import {TodosList} from 'client/todos-list/todos-list';
+import {TodoDetails} from 'client/todo-details/todo-details';
 
 @Component({
   selector: 'app'
 })
 @View({
-  //template: "<p>Hello World!</p>"
-  templateUrl: 'client/index.ng.html',
-  directives: [NgFor, CreateTodo]
+  template: "<router-outlet></router-outlet>"
+  directives: [routerDirectives]
 })
+@RouteConfig([
+  {path: '/', as 'todos-list', component: TodosList},
+  {path: '/todo/:todoId', as: 'todo-details', component: TodoDetails}
+])
 class MeteorAngular01 {
-  constructor() {
-    Tracker.autorun(zone.bind(() => {
-      this.todos = Todos.find().fetch();
-    }));
-  }
 }
 
-bootstrap(MeteorAngular01);
+bootstrap(MeteorAngular01, [
+  routerInjectables,
+  bind(LocationStrategy).toClass(HashLocationStrategy)
+]);
